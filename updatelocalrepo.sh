@@ -2,6 +2,8 @@
 BRANCH=$1
 FOLDER=$(date +%Y%m%d_%H%M%S)
 OLD_FOLDER=$(find /opt/webfiles/history -maxdepth 1 -type d -printf '%T@\t%p\n' | sort -r | tail -n 1 | sed 's/[0-9]*\.[0-9]*\t//')
+CHOWN = "www-data"
+CHGRP = "www-data"
 
 #check to make sure a branch was specified
 if [ -z $BRANCH ]
@@ -39,6 +41,12 @@ mkdir /opt/webfiles/history/$FOLDER
 
 echo " "
 echo "Copy latest repo files to new history folder"
-cp -r /opt/webfiles/repo/docroot/. /opt/webfiles/history/$FOLDER
+cp -r /opt/webfiles/repo/. /opt/webfiles/history/$FOLDER
+
+echo " "
+echo "Change ownership and group of web content folder"
+cd /opt/webfiles/repo
+chown -R $CHOWN .
+chgrp -R $CHGRP .
 
 echo " "
