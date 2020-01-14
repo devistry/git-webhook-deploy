@@ -2,8 +2,8 @@
 BRANCH=$1
 FOLDER=$(date +%Y%m%d_%H%M%S)
 OLD_FOLDER=$(find /opt/webfiles/history -maxdepth 1 -type d -printf '%T@\t%p\n' | sort -r | tail -n 1 | sed 's/[0-9]*\.[0-9]*\t//')
-CHOWN = "www-data"
-CHGRP = "www-data"
+CHOWN="www-data"
+CHGRP="www-data"
 
 #check to make sure a branch was specified
 if [ -z $BRANCH ]
