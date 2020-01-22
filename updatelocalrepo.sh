@@ -1,9 +1,12 @@
 #!/bin/bash
 BRANCH=$1
 FOLDER=$(date +%Y%m%d_%H%M%S)
-OLD_FOLDER=$(find /opt/webfiles/history -maxdepth 1 -type d -printf '%T@\t%p\n' | sort -r | tail -n 1 | sed 's/[0-9]*\.[0-9]*\t//')
+OLD_FOLDER=$(find /opt/webfiles/admin/history -maxdepth 1 -type d -printf '%T@\t%p\n' | sort -r | tail -n 1 | sed 's/[0-9]*\.[0-9]*\t//')
 CHOWN="www-data"
 CHGRP="www-data"
+
+SCRIPT_LOCATION=$(readlink -f "$0")
+BASEDIR=$(dirname "$SCRIPT_LOCATION")
 
 #check to make sure a branch was specified
 if [ -z $BRANCH ]
@@ -13,39 +16,39 @@ then
 fi
 
 echo " "
-echo "Navigate to repo folder /opt/webfiles/repo"
-cd /opt/webfiles/repo
+echo "Navigate to repo folder $BASEDIR/repo"
+cd $BASEDIR/repo
 
 echo " "
-echo "Stash any unsaved changes."
+echo -e "Stash any unsaved changes.\e[32m"
 git stash
 
-echo " "
-echo "Checkout the $BRANCH branch"
+echo -e "\e[0m"
+echo -e "Checkout the $BRANCH branch.\e[32m"
 git checkout $BRANCH
 
-echo " "
-echo "Pull any changes"
+echo -e "\e[0m"
+echo -e "Pull any changes.\e[32m"
 git pull
+echo -e "\e[0m"
 
-if [ $(find /opt/webfiles/history -maxdepth 1 -type d -print | wc -l) -gt 5 ]
+if [ $(find $BASEDIR/history -maxdepth 1 -type d -print | wc -l) -gt 5 ]
 then
-    echo " "
-    echo "Removing old history folder - $OLD_FOLDER"
+    echo -e "Removing old history folder \e[32m$OLD_FOLDER\e[0m"
     rm -r -f $OLD_FOLDER
 fi
 
 echo " "
-echo "Create a folder to store repo history - /opt/webfiles/history/$FOLDER"
-mkdir /opt/webfiles/history/$FOLDER
+echo -e "Create a folder to store repo history \e[32m/opt/webfiles/admin/history/$FOLDER\e[0m"
+mkdir $BASEDIR/history/$FOLDER
 
 echo " "
 echo "Copy latest repo files to new history folder"
-cp -r /opt/webfiles/repo/. /opt/webfiles/history/$FOLDER
+cp -r $BASEDIR/repo/. $BASEDIR/history/$FOLDER
 
 echo " "
 echo "Change ownership and group of web content folder"
-cd /opt/webfiles/repo
+cd $BASEDIR/repo
 chown -R $CHOWN .
 chgrp -R $CHGRP .
 
